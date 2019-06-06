@@ -1,0 +1,24 @@
+{
+  "name": "embark-omg-demo",
+  "version": "4.1.0-beta.2",
+  "description": "Basic DApp template for Embark",
+  "homepage": "https://github.com/embark-framework/embark/tree/master/dapps/templates/boilerplate#readme",
+  "bugs": "https://github.com/embark-framework/embark/issues",
+  "scripts": {
+    "test": "embark test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "directory": "dapps/templates/boilerplate",
+    "type": "git",
+    "url": "https://github.com/embark-framework/embark.git"
+  },
+  "devDependencies": {
+    "embarkjs-connector-web3": "^4.1.0-beta.2",
+    "embark-omg": "^1.0.0",
+    "embarkjs-omg": "^1.0.0"
+  },
+  "gitHead": "91f87d2057f95fb1500f455d8affbb1a711cf6f9"
+}

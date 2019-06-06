@@ -1,0 +1,32 @@
+{
+  "contracts": ["contracts/**"],
+  "app": {
+    "css/app.css": ["app/css/**"],
+    "js/app.js": ["app/js/index.js"],
+    "images/": ["app/images/**"],
+    "index.html": "app/index.html"
+  },
+  "buildDir": "dist/",
+  "config": "config/",
+  "versions": {
+    "web3": "1.0.0-beta",
+    "solc": "0.5.0",
+    "ipfs-api": "17.2.4"
+  },
+  "plugins": {
+    "embarkjs-connector-web3": {},
+    "embark-omg": {
+      "WEB3_PROVIDER_URL": "https://rinkeby.infura.io/",
+      "WATCHER_URL": "https://watcher.ari.omg.network/",
+      "CHILDCHAIN_URL": "https://ari.omg.network/",
+      "PLASMA_CONTRACT_ADDRESS": "0x44de0ec539b8c4a4b530c78620fe8320167f2f74"
+    }
+  },
+  "options": {
+    "solc": {
+      "optimize": true,
+      "optimize-runs": 200
+    }
+  },
+  "generationDir": "embarkArtifacts"
+}
