@@ -20,5 +20,8 @@
     "embark-omg": "^1.0.0",
     "embarkjs-omg": "^1.0.0"
   },
-  "gitHead": "91f87d2057f95fb1500f455d8affbb1a711cf6f9"
+  "gitHead": "91f87d2057f95fb1500f455d8affbb1a711cf6f9",
+  "dependencies": {
+    "@omisego/omg-js-rootchain": "^1.2.2"
+  }
 }

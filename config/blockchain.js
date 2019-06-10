@@ -75,7 +75,7 @@ module.exports = {
     // in the `account > password` setting below.
     // NOTE: once `mineWhenNeeded` is enabled, you must run an `embark reset` on your dApp before running
     // `embark blockchain` or `embark run` for the first time.
-    mineWhenNeeded: true, 
+    mineWhenNeeded: true,
     // -- genesisBlock --
     // This option is only valid when mineWhenNeeded is true (which is only valid if isDev is false).
     // When enabled, geth uses POW to mine transactions as it would normally, instead of using POA as it does in --dev mode.
@@ -126,29 +126,45 @@ module.exports = {
         nodeAccounts: true,
         password: "config/testnet/password"
       },
-      /*,accounts: [
-        /*{
-          nodeAccounts: true, // Accounts use for the node
-          numAddresses: "1", // Number of addresses/accounts (defaults to 1)
-          password: "config/development/devpassword" // Password file for the accounts
-        },
-        // Below are additional accounts that will count as `nodeAccounts` in the `deployment` section of your contract config
-        // Those will not be unlocked in the node itself
-        {
-          privateKey: "fill this in"
-        },
+      /*{
+        nodeAccounts: true, // Accounts use for the node
+        numAddresses: "1", // Number of addresses/accounts (defaults to 1)
+        password: "config/development/devpassword" // Password file for the accounts
+      },
+      // Below are additional accounts that will count as `nodeAccounts` in the `deployment` section of your contract config
+      // Those will not be unlocked in the node itself
+      
+      {
+        privateKey: ""
+      },
         {
           privateKeyFile: "path/to/file", // Either a keystore or a list of keys, separated by , or ;
           password: "passwordForTheKeystore" // Needed to decrypt the keystore file
-        },
+        },*/
         {
-          mnemonic: "unaware wire nice dove shrug stable exclude copper disagree olive walnut glance",
+          mnemonic: "",
           addressIndex: "0", // Optional. The index to start getting the address
           numAddresses: "1", // Optional. The number of addresses to get
           hdpath: "m/44'/60'/0'/0/", // Optional. HD derivation path
-          balance: "100 ether"
         }
-      ]*/
+      /*]*/
+    ]
+  },
+
+  // merges with the settings in default
+  // used with "embark run testnet" and/or "embark blockchain testnet"
+  rinkeby: {
+    networkType: "rinkeby",
+    syncMode: "light",
+    networkId: 4,
+    accounts: [
+      {
+        nodeAccounts: true,
+        password: "config/testnet/password"
+      },
+      {
+        privateKey: ""
+      }
     ]
   },
 

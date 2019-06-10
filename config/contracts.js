@@ -52,21 +52,16 @@ module.exports = {
     //strategy: 'implicit',
 
     contracts: {
-      // example:
-      //SimpleStorage: {
-      //  args: [ 100 ]
-      //}
+      PlasmaCore: {
+        address: "0x44de0ec539b8c4a4b530c78620fe8320167f2f74",
+        abiDefinition: require("@omisego/omg-js-rootchain/src/plasmaAbi").abi
+      }
     }
   },
 
   // default environment, merges with the settings in default
   // assumed to be the intended environment by `embark run`
   development: {
-    dappConnection: [
-      "ws://localhost:8546",
-      "http://localhost:8545",
-      "$WEB3"  // uses pre existing web3 object if available (e.g in Mist)
-    ]
   },
 
   // merges with the settings in default
@@ -77,6 +72,15 @@ module.exports = {
   // merges with the settings in default
   // used with "embark run testnet"
   testnet: {
+  },
+
+  rinkeby: {
+    contracts: {
+      PlasmaCore: {
+        address: "0x44de0ec539b8c4a4b530c78620fe8320167f2f74",
+        abiDefinition: require("@omisego/omg-js-rootchain/src/plasmaAbi").abi
+      }
+    }
   },
 
   // merges with the settings in default
