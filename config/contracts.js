@@ -54,7 +54,7 @@ module.exports = {
     contracts: {
       PlasmaCore: {
         address: "0x44de0ec539b8c4a4b530c78620fe8320167f2f74",
-        abiDefinition: require("@omisego/omg-js-rootchain/src/plasmaAbi").abi
+        abiDefinition: require("@omisego/omg-js-rootchain/src/contracts/RootChain.json").abi
       }
     }
   },
@@ -78,7 +78,7 @@ module.exports = {
     contracts: {
       PlasmaCore: {
         address: "0x44de0ec539b8c4a4b530c78620fe8320167f2f74",
-        abiDefinition: require("@omisego/omg-js-rootchain/src/plasmaAbi").abi
+        abiDefinition: require("@omisego/omg-js-rootchain/src/contracts/RootChain.json").abi
       }
     }
   },
