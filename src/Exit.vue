@@ -42,8 +42,7 @@ limitations under the License.
 </template>
 
 <script>
-import modal from "./Modal.vue"
-import omgNetwork from "./omg-network"
+import modal from "./Modal.vue";
 
 export default {
   components: {
@@ -51,6 +50,7 @@ export default {
   },
 
   props: {
+    EmbarkJS: Object,
     activeAccount: Object,
     rootChain: Object,
     childChain: Object,
@@ -60,21 +60,23 @@ export default {
   data() {
     return {
       utxoToExit: ""
-    }
+    };
   },
 
   methods: {
     exit: async function() {
-      const fromAddr = this.activeAccount.address
-      const utxoToExit = this.utxoToExit
+      const fromAddr = this.activeAccount.address;
+      const utxoToExit = this.utxoToExit;
       try {
-        const receipt = await omgNetwork.exitUtxo(this.rootChain, this.childChain, fromAddr, utxoToExit)
-        this.utxoToExit = ""
-        this.$parent.info(`Called RootChain.startExit(): ${receipt.transactionHash}`)
+        const receipt = await EmbarkJS.Plasma.exitUtxo(fromAddr, utxoToExit);
+        this.utxoToExit = "";
+        this.$parent.info(
+          `Called RootChain.startExit(): ${receipt.transactionHash}`
+        );
       } catch (err) {
-        this.$parent.error(err)
+        this.$parent.error(err);
       }
     }
   }
-}
+};
 </script>

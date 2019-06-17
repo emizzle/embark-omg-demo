@@ -27,7 +27,7 @@ limitations under the License.
           Token:
           <select id="transferCurrency" v-model="transferCurrency">
             <option
-              v-for="balance in activeAccount.childBalance"
+              v-for="balance in activeAccount.childBalances"
               v-bind:value="balance.currency"
             >{{ balance.symbol != 'Unknown ERC20' ? balance.symbol : balance.currency }}</option>
           </select>
@@ -50,8 +50,7 @@ limitations under the License.
 </template>
 
 <script>
-import modal from "./Modal.vue"
-import omgNetwork from "./omg-network"
+import modal from "./Modal.vue";
 
 export default {
   components: {
@@ -60,6 +59,7 @@ export default {
 
   props: {
     OmgUtil: Object,
+    EmbarkJS: Object,
     activeAccount: Object,
     childChain: Object,
     rootChain: Object
@@ -69,33 +69,29 @@ export default {
     return {
       transferCurrency: this.OmgUtil.transaction.ETH_CURRENCY,
       transferAmount: 0,
-      transferToAddress: ''
-    }
+      transferToAddress: ""
+    };
   },
 
   methods: {
     transfer: async function() {
       const tokenContract =
-        this.transferCurrency || this.OmgUtil.transaction.ETH_CURRENCY
-      const fromAddr = this.activeAccount.address
-      const toAddr = this.transferToAddress
-      const value = this.transferAmount
+        this.transferCurrency || this.OmgUtil.transaction.ETH_CURRENCY;
+      const fromAddr = this.activeAccount.address;
+      const toAddr = this.transferToAddress;
+      const value = this.transferAmount;
 
       try {
-        const result = await omgNetwork.transfer(
-          web3,
-          this.childChain,
-          fromAddr, 
+        const result = await EmbarkJS.Plasma.transfer(
           toAddr,
-          value, 
-          tokenContract,
-          this.rootChain.plasmaContractAddress
-        )
-        this.$parent.info(`Submitted transaction: ${JSON.stringify(result)}`)
+          value,
+          tokenContract
+        );
+        this.$parent.info(`Submitted transaction: ${JSON.stringify(result)}`);
       } catch (err) {
-        this.$parent.error(err)
+        this.$parent.error(err);
       }
-    },
+    }
   }
-}
+};
 </script>
