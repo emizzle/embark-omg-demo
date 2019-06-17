@@ -28,16 +28,18 @@ limitations under the License.
             </md-card-header>
             <div class="md-layout-item">
               <b>Wallet Address:</b>
-              {{ activeAccount.address }}
+              {{ account.address }}
             </div>
             <div class="md-layout-item">
               <b>Rootchain Balance:</b>
-              <span class="balance">{{ activeAccount.rootBalance }} wei</span>
+              <span class="balance">{{ account.rootBalance }} wei</span>
             </div>
             <div class="md-layout-item">
               <b>Childchain Balance:</b>
-              <div v-for="balance in activeAccount.childBalance">
-                <span class="balance">{{ balance.amount }} {{ balance.symbol }} {{balance.currency}}</span>
+              <div v-for="balance in account.childBalances">
+                <span
+                  class="balance"
+                >{{ balance.amount }} {{ balance.symbol }} ({{ balance.currency === OmgUtil.transaction.ETH_CURRENCY ? "ETH" : balance.currency}})</span>
               </div>
             </div>
             <div class="md-layout-item">
@@ -101,7 +103,7 @@ limitations under the License.
         v-on:close="toggleDeposit()"
         v-bind:OmgUtil="OmgUtil"
         v-bind:rootChain="rootChain"
-        v-bind:activeAccount="activeAccount"
+        v-bind:activeAccount="account"
         v-bind:plasmaContractAddress="plasmaContractAddress"
       />
 
@@ -111,7 +113,7 @@ limitations under the License.
         v-bind:OmgUtil="OmgUtil"
         v-bind:childChain="childChain"
         v-bind:rootChain="rootChain"
-        v-bind:activeAccount="activeAccount"
+        v-bind:activeAccount="account"
       />
 
       <Exit
@@ -119,7 +121,7 @@ limitations under the License.
         v-on:close="toggleExit()"
         v-bind:rootChain="rootChain"
         v-bind:childChain="childChain"
-        v-bind:activeAccount="activeAccount"
+        v-bind:activeAccount="account"
         v-bind:utxos="utxos"
       />
     </div>
@@ -135,34 +137,11 @@ import modal from "./Modal.vue";
 import Deposit from "./Deposit.vue";
 import Transfer from "./Transfer.vue";
 import Exit from "./Exit.vue";
-import omgNetwork from "./omg-network";
-import config from "./config";
-import ChildChain from "@omisego/omg-js-childchain";
-import RootChain from "@omisego/omg-js-rootchain";
 import OmgUtil from "@omisego/omg-js-util";
-import Web3 from "web3";
 import EmbarkJS from "./embarkArtifacts/embarkjs";
+import pify from "pify";
 
 const web3Options = { transactionConfirmationBlocks: 1 };
-
-async function initWeb3() {
-  if (ethereum) {
-    web3 = new Web3(ethereum, null, web3Options);
-    try {
-      // Request account access
-      await ethereum.enable();
-      return true;
-    } catch (err) {
-      // User denied account access :(
-      console.error(err);
-    }
-  } else if (web3) {
-    web3 = new Web3(web3.currentProvider, null, web3Options);
-    return true;
-  }
-  // No web3...
-  return false;
-}
 
 export default {
   name: "app",
@@ -182,10 +161,15 @@ export default {
       rootChain: {},
       childChain: {},
       OmgUtil: OmgUtil,
-      activeAccount: {},
-      plasmaContractAddress: config.plasmaContractAddress,
+      plasmaContractAddress: "",
       utxos: [],
-      transactions: []
+      transactions: [],
+      // rootBalance: account.rootBalance,
+      // childBalances: account.childBalances
+      account: {
+        rootBalance: 0,
+        childBalances: []
+      }
     };
   },
   mounted() {
@@ -201,34 +185,47 @@ export default {
       this.$refs.eventLog.error(message);
     },
     init: async function() {
-      console.log(`====> EmbarkJS.Plasma: ${EmbarkJS.Plasma}`);
-      if (!(await initWeb3())) {
-        return;
-      }
-
-      this.hasWeb3 = true;
-
       try {
-        this.rootChain = new RootChain(web3, config.plasmaContractAddress);
-        this.childChain = new ChildChain(config.watcherUrl);
+        await pify(EmbarkJS.onReady)();
+        // EmbarkJS.onReady(async () => {
 
-        const accounts = await omgNetwork.getAccounts(web3);
-        this.activeAccount = accounts[0];
+        const embarkJsWeb3Provider = EmbarkJS.Blockchain.Providers["web3"];
+        if (!embarkJsWeb3Provider) {
+          throw new Error(
+            "web3 cannot be found. Please ensure you have the 'embarkjs-connector-web3' plugin installed in your DApp."
+          );
+        }
+        await EmbarkJS.Plasma.init(embarkJsWeb3Provider.web3);
+
+        this.hasWeb3 =
+          EmbarkJS.Plasma.web3 &&
+          ((EmbarkJS.Plasma.web3.currentProvider &&
+            EmbarkJS.Plasma.web3.currentProvider.isMetaMask) ||
+            (EmbarkJS.Plasma.web3.givenProvider &&
+              EmbarkJS.Plasma.web3.givenProvider.isMetaMask));
+        const {
+          rootChain,
+          childChain,
+          plasmaContractAddress
+        } = EmbarkJS.Plasma;
+        this.rootChain = rootChain;
+        this.childChain = childChain;
+        this.plasmaContractAddress = plasmaContractAddress;
 
         this.refresh();
+        // });
       } catch (err) {
         this.error(err);
       }
     },
 
-    refresh: function() {
-      omgNetwork.getBalances(this.childChain, this.activeAccount, web3);
-      omgNetwork
-        .getUtxos(this.childChain, this.activeAccount)
-        .then(utxos => (this.utxos = utxos));
-      omgNetwork
-        .getTransactions(this.childChain, this.activeAccount)
-        .then(txs => (this.transactions = txs));
+    refresh: async function() {
+      await EmbarkJS.Plasma.updateState();
+      const { transactions, account, utxos } = EmbarkJS.Plasma.state;
+
+      this.utxos = utxos;
+      this.transactions = transactions;
+      this.account = account;
     },
 
     toggleDeposit() {

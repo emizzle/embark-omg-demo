@@ -45,8 +45,7 @@ limitations under the License.
 </template>
 
 <script>
-import modal from "./Modal.vue"
-import omgNetwork from "./omg-network"
+import modal from "./Modal.vue";
 
 export default {
   components: {
@@ -55,6 +54,7 @@ export default {
 
   props: {
     OmgUtil: Object,
+    EmbarkJS: Object,
     activeAccount: Object,
     rootChain: Object,
     plasmaContractAddress: String
@@ -65,30 +65,28 @@ export default {
       depositCurrency: "",
       depositAmount: 0,
       approveDeposit: false
-    }
+    };
   },
 
   methods: {
     deposit: async function() {
       try {
-        const tokenContract = this.depositCurrency || this.OmgUtil.transaction.ETH_CURRENCY
-        const from = this.activeAccount.address
-        const value = this.depositAmount
+        const tokenContract =
+          this.depositCurrency || this.OmgUtil.transaction.ETH_CURRENCY;
+        const from = this.activeAccount.address;
+        const value = this.depositAmount;
 
-        const tx = await omgNetwork.deposit(
-          web3, 
-          this.rootChain, 
-          from, 
-          value, 
+        const result = await EmbarkJS.Plasma.deposit(
+          value,
           tokenContract,
           this.approveDeposit
-        )
-        this.approveDeposit = false
-        this.$parent.info(`Deposited ${value} ${tokenContract === this.OmgUtil.transaction.ETH_CURRENCY ? 'wei' : tokenContract} tokens: ${tx.transactionHash}`)
+        );
+        this.approveDeposit = false;
+        this.$parent.info(result);
       } catch (err) {
-        this.$parent.error(err)
+        this.$parent.error(err);
       }
     }
   }
-}
+};
 </script>
